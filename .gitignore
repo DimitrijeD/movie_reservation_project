@@ -3,7 +3,7 @@
 # earlier versions of Drupal are tracked in `community/PHP/`
 
 # What ever this is
-/.idea/**
+.idea
 
 # Ignore configuration files that may contain sensitive information
 /sites/*/*settings*.php
