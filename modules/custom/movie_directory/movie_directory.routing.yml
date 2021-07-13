@@ -1,7 +1,0 @@
-movie_directory.listing:
-  path: '/movie-listing'
-  defaults:
-    _controller: '\Drupal\movie_directory\Controller\MovieListing::view'
-    _title: 'Movie Listing'
-  requirements:
-    _permission: 'access content'
