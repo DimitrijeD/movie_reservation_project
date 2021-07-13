@@ -2,6 +2,9 @@
 #
 # earlier versions of Drupal are tracked in `community/PHP/`
 
+# What ever this is
+.idea
+
 # Ignore configuration files that may contain sensitive information
 /sites/*/*settings*.php
 /sites/*/*services*.yml
