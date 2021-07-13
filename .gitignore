@@ -23,7 +23,6 @@
 
 # Ignore drupal core (if not versioning drupal sources)
 /core
-
 /profiles/README.txt
 /sites/README.txt
 /sites/example.sites.php
