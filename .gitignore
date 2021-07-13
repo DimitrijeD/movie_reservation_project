@@ -20,7 +20,7 @@
 
 # Ignore testing related files
 /sites/simpletest
-/.idea
+
 # Ignore drupal core (if not versioning drupal sources)
 /core
 /profiles/README.txt
@@ -46,3 +46,6 @@
 /robots.txt
 /update.php
 /web.config
+
+# What ever this is
+/.idea/
