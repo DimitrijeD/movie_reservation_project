@@ -6,3 +6,10 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+
+/ispectionProfiles/
+/modules.xml
+/movie_reservation_project.iml
+/php.xml
+/vsc.xml
+/workspace.xml
