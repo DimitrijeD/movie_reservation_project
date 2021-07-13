@@ -6,6 +6,8 @@
 /sites/*/*settings*.php
 /sites/*/*services*.yml
 
+/.idea/**
+
 # Ignore paths that may contain user-generated content
 /sites/*/files
 /sites/*/public
