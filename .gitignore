@@ -48,4 +48,4 @@
 /web.config
 
 # What ever this is
-/.idea
+.idea/**
