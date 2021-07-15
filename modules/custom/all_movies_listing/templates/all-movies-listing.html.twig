@@ -5,13 +5,14 @@
 <div id="allmovies">
   {% for movie in movies %}
     <div id="movie">
-      <div>{{ movie.title }}</div>
-      <img src="{{ file_url(movie.image_uri) }}"/>
+      <div> {{ movie.title.value }} </div>
+      <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}"/>
       {% autoescape false %}
-        <div>{{ movie.description }}</div>
+        <div>{{ movie.field_description.value }}</div>
       {% endautoescape %}
     </div>
     <br>
   {% endfor %}
 </div>
+
 
