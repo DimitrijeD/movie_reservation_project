@@ -1,0 +1,17 @@
+<div id="title">
+  {{ pageTitle }}
+</div>
+
+<div id="allmovies">
+  {% for movie in movies %}
+    <div id="movie">
+      <div>{{ movie.title }}</div>
+      <img src="{{ file_url(movie.image_uri) }}"/>
+      {% autoescape false %}
+        <div>{{ movie.description }}</div>
+      {% endautoescape %}
+    </div>
+    <br>
+  {% endfor %}
+</div>
+

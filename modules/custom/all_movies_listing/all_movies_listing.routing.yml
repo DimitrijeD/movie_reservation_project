@@ -1,0 +1,6 @@
+all_movies_listing.listing:
+  path: '/allmovies'
+  defaults:
+    _controller: '\Drupal\all_movies_listing\Controller\AllMoviesListing::content'
+  requirements:
+    _permission: 'access content'
