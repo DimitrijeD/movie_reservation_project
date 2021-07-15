@@ -1,5 +1,5 @@
 all_movies_listing.listing:
-  path: '/all_movies'
+  path: '/all-movies'
   defaults:
     _controller: '\Drupal\all_movies_listing\Controller\AllMoviesListing::content'
   requirements:
