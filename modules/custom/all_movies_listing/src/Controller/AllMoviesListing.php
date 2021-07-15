@@ -9,20 +9,9 @@ use Drupal\file\Entity\File;
 
 class AllMoviesListing extends ControllerBase{
   public function content(){
-//    $conn = Database::getConnection();
-//    $query = $conn->query("SELECT * FROM node");
-//    $result = $query->fetchAll();
 
     $allNodeIds = \Drupal::entityQuery('node')->condition('type', 'movies')->execute();
     $nodes = Node::loadMultiple($allNodeIds);
-
-//    $nids = \Drupal::entityTypeManager()
-//      ->getListBuilder('node')
-//      ->getStorage()
-//      ->loadByProperties([
-//        'type' => 'movies',
-//        'status' => 1,
-//      ]);
 
     $movies = array();
     $key = 1;
