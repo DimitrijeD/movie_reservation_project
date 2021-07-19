@@ -4,6 +4,7 @@
 
 # What ever this is
 .idea
+
 /composer.phar/**
 /.info
 /themes/**
