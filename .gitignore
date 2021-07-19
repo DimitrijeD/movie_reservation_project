@@ -7,12 +7,12 @@
 /composer.phar/**
 /.info
 /themes/**
+/info
+/.idea/**
 
 # Ignore configuration files that may contain sensitive information
 /sites/*/*settings*.php
 /sites/*/*services*.yml
-
-/.idea/**
 
 # Ignore paths that may contain user-generated content
 /sites/*/files
