@@ -6,8 +6,8 @@
 .idea
 /.composer.phar
 /.info
-/themes
-/themes/*
+/themes/**
+
 # Ignore configuration files that may contain sensitive information
 /sites/*/*settings*.php
 /sites/*/*services*.yml
