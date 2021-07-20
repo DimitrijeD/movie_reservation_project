@@ -4,7 +4,7 @@ namespace Drupal\all_movies_listing\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\node\Entity\Node;
 
-class AllMoviesListing extends ControllerBase{
+class AllMoviesListing extends ControllerBase {
 
   public function content()
   {
@@ -20,23 +20,21 @@ class AllMoviesListing extends ControllerBase{
 
   public function movie_reservation()
   {
-    $movie_categories = self::get_all_movie_categories();
-    $s = 1;
     return [
       '#theme' => 'movie-reservation',
       '#pageTitle' => 'Welcome to our movie reservation page',
-      '#movie_categories' => $movie_categories,
+      '#movie_categories' => $this->get_all_movie_categories(),
     ];
   }
 
-  public static function get_all_movie_categories()
+  public function get_all_movie_categories()
   {
     $terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('movie_type');
     foreach ($terms as $term) {
-      $term_data[] = array(
+      $term_data[] = [
         'tid' => $term->tid,
         'name' => $term->name,
-      );
+      ];
     }
     return $term_data;
   }
