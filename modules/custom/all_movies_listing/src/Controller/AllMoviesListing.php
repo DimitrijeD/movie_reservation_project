@@ -5,8 +5,9 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\node\Entity\Node;
 
 class AllMoviesListing extends ControllerBase{
-  public function content(){
 
+  public function content()
+  {
     $allNodeIds = \Drupal::entityQuery('node')->condition('type', 'movies')->execute();
     $movies = Node::loadMultiple($allNodeIds);
 
@@ -17,11 +18,27 @@ class AllMoviesListing extends ControllerBase{
     ];
   }
 
-  public function movie_reservation(){
+  public function movie_reservation()
+  {
+    $movie_categories = self::get_all_movie_categories();
+    $s = 1;
     return [
       '#theme' => 'movie-reservation',
       '#pageTitle' => 'Welcome to our movie reservation page',
+      '#movie_categories' => $movie_categories,
     ];
+  }
+
+  public static function get_all_movie_categories()
+  {
+    $terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('movie_type');
+    foreach ($terms as $term) {
+      $term_data[] = array(
+        'tid' => $term->tid,
+        'name' => $term->name,
+      );
+    }
+    return $term_data;
   }
 }
 

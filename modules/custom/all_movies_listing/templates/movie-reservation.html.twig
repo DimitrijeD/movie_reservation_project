@@ -1,3 +1,18 @@
-<div>
+<h1>
     {{ pageTitle }}
+</h1>
+
+<p>
+  Please select movie genre for which you would like to make a reservation
+</p>
+
+<div>
+  <select>
+  {% for category in movie_categories %}
+    {# or put tid as value? #}
+    <option value="{{ category.name }}">
+      {{ category.name }}
+    </option>
+  {% endfor %}
+  </select>
 </div>
