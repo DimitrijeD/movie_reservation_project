@@ -6,12 +6,13 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
     'all-movies-listing' => [
       'variables' => [
         'pageTitle' => NULL,
-        'movies' => NULL
+        'movies' => NULL,
       ]
     ],
     'movie-reservation' => [
       'variables' => [
-        'pageTitle' => NULL
+        'pageTitle' => NULL,
+        'movie_categories' => NULL,
       ]
     ]
   ];
