@@ -10,7 +10,7 @@
   <select>
   {% for category in movie_categories %}
     {# or put tid as value? #}
-    <option value="{{ category.name }}">
+    <option value="{{ category.tid }}">
       {{ category.name }}
     </option>
   {% endfor %}
