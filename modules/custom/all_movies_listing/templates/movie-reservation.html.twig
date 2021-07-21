@@ -9,10 +9,61 @@
 <div>
   <select>
   {% for category in movie_categories %}
-    {# or put tid as value? #}
     <option value="{{ category.tid }}">
       {{ category.name }}
     </option>
   {% endfor %}
   </select>
+</div>
+
+<div>
+  {% for movie in movies %}
+    <div id="movie">
+      <div> {{ movie.title.value }} </div>
+      <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" style="height: 200px;"  alt="No img"/>
+      {% autoescape false %}
+        <div>{{ movie.field_description.value }}</div>
+      {% endautoescape %}
+
+      <div>
+        {# I hate doing it this way #}
+
+        {% if movie.field_movie_paragraph.entity.field_monday.value == 1 %}
+          <p style="color:green;">Monday: Available for reservation.</p>
+        {% else %}
+          <p style="color:red">Monday: Not available for reservation.</p>
+        {% endif %}
+
+        {% if movie.field_movie_paragraph.entity.field_tuesday.value == 1 %}
+          <p style="color:green;">Tuesday: Available for reservation.</p>
+        {% else %}
+          <p style="color:red">Tuesday: Not available for reservation.</p>
+        {% endif %}
+
+        {% if movie.field_movie_paragraph.entity.field_wednesday.value == 1 %}
+          <p style="color:green;">Wednesday: Available for reservation.</p>
+        {% else %}
+          <p style="color:red">Wednesday: Not available for reservation.</p>
+        {% endif %}
+
+        {% if movie.field_movie_paragraph.entity.field_thursday.value == 1 %}
+          <p style="color:green;">Thursday: Available for reservation.</p>
+        {% else %}
+          <p style="color:red">Thursday: Not available for reservation.</p>
+        {% endif %}
+
+        {% if movie.field_movie_paragraph.entity.field_friday.value == 1 %}
+          <p style="color:green;">Friday: Available for reservation.</p>
+        {% else %}
+          <p style="color:red">Friday: Not available for reservation.</p>
+        {% endif %}
+      </div>
+
+    </div>
+    <br>
+  {% endfor %}
+</div>
+
+<div>
+  {{ breakpoint(movies[1].field_movie_paragraph.entity.field_tuesday.value) }}
 </div>
