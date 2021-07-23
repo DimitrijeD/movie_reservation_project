@@ -9,10 +9,52 @@
 <div>
   <select>
   {% for category in movie_categories %}
-    {# or put tid as value? #}
     <option value="{{ category.tid }}">
       {{ category.name }}
     </option>
   {% endfor %}
   </select>
 </div>
+
+<div>
+  {% set no_movie_available = true %}
+
+  {% for movie in movies %}
+    {% set movie_availability = get_movie_availability(movie) %}
+    {% if movie_availability != false %}
+      {% set no_movie_available = false %}
+      <div id="movie">
+
+        <div>
+          {{ movie.title.value }}
+        </div>
+
+        <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" style="height: 200px;"  alt="No img"/>
+
+        {% autoescape false %}
+          <div>{{ movie.field_description.value }}</div>
+        {% endautoescape %}
+
+        <div>
+          <p>
+            Movie is available for:
+          </p>
+          {% for key in movie_availability|keys %}
+            <p style="color:green;">
+              {{ key }}
+            </p>
+          {% endfor %}
+        </div>
+
+      </div>
+      <br>
+
+    {% endif %}
+  {% endfor %}
+
+  {% if no_movie_available == true %}
+    <p>Sorry, there are no movies currently available. :(</p>
+  {% endif %}
+</div>
+
+

@@ -13,6 +13,7 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
       'variables' => [
         'pageTitle' => NULL,
         'movie_categories' => NULL,
+        'movies' => NULL,
       ]
     ]
   ];
