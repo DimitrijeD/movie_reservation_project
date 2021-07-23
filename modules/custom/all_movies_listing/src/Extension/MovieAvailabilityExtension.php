@@ -27,9 +27,9 @@ class MovieAvailabilityExtension extends AbstractExtension
       return false;
     }
     $target_id = $paragraph[0]['target_id'];
-    $p = Paragraph::load( $target_id );
+    $movie_paragraph = Paragraph::load( $target_id );
 
-    if(! $p){
+    if(!$movie_paragraph){
       // movie hasn't been set to be available
       return false;
     }
@@ -45,7 +45,7 @@ class MovieAvailabilityExtension extends AbstractExtension
 
     foreach($days_in_week as $day => $field)
     {
-      $text = $p->{$field}->getValue();
+      $text = $movie_paragraph->{$field}->getValue();
       if($text != null)
       {
         if ($text[0]['value'] == 1)

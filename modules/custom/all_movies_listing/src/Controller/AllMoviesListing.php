@@ -44,35 +44,6 @@ class AllMoviesListing extends ControllerBase {
     return Node::loadMultiple($allNodeIds);
   }
 
-/*  public function test()
-  {
-    $movies = $this->get_all_movie_nodes();
-    $days_in_week = [
-      'monday'    => 'field_monday',
-      'tuesday'   => 'field_tuesday',
-      'wednesday' => 'field_wednesday',
-      'thursday'  => 'field_thursday',
-      'friday'    => 'field_friday',
-    ];
-
-    foreach ($movies as $movie)
-    {
-      $available_days = [];
-      $paragraph = $movie->field_movie_paragraph->getValue();
-      $target_id = $paragraph[0]['target_id'];
-      $p = Paragraph::load($target_id);
-
-      if(!empty($p)) {
-        foreach ($days_in_week as $day => $field) {
-          $text = $p->{$field}->getValue();
-          $available_days[$day] = $text[0]['value'];
-        }
-      }
-      $s = 4;
-    }
-    $a = 2;
-
-  }*/
 }
 
 

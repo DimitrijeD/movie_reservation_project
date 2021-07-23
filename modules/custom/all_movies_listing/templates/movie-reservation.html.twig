@@ -17,10 +17,12 @@
 </div>
 
 <div>
+  {% set no_movie_available = true %}
+
   {% for movie in movies %}
     {% set movie_availability = get_movie_availability(movie) %}
     {% if movie_availability != false %}
-
+      {% set no_movie_available = false %}
       <div id="movie">
 
         <div>
@@ -49,6 +51,10 @@
 
     {% endif %}
   {% endfor %}
+
+  {% if no_movie_available == true %}
+    <p>Sorry, there are no movies currently available. :(</p>
+  {% endif %}
 </div>
 
 
