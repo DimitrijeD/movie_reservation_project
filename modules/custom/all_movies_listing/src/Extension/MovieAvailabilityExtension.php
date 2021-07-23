@@ -48,7 +48,7 @@ class MovieAvailabilityExtension extends AbstractExtension
       $text = $movie_paragraph->{$field}->getValue();
       if($text != null)
       {
-        if ($text[0]['value'] == 1)
+        if ($text[0]['value'])
         {
           $available_days[$day] = $text[0]['value'];
         }
