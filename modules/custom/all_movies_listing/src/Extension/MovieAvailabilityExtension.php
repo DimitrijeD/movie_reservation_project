@@ -58,9 +58,8 @@ class MovieAvailabilityExtension extends AbstractExtension
     if(!empty($available_days))
     {
       return $available_days;
-    } else {
-      return false;
     }
-  }
 
+    return false;
+  }
 }
