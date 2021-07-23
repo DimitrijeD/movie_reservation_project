@@ -1,0 +1,5 @@
+services:
+  all_movies_listing.twig.MovieAvailabilityExtension:
+    class: Drupal\all_movies_listing\Extension\MovieAvailabilityExtension
+    tags:
+      - { name: twig.extension }

@@ -18,52 +18,37 @@
 
 <div>
   {% for movie in movies %}
-    <div id="movie">
-      <div> {{ movie.title.value }} </div>
-      <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" style="height: 200px;"  alt="No img"/>
-      {% autoescape false %}
-        <div>{{ movie.field_description.value }}</div>
-      {% endautoescape %}
+    {% set movie_availability = get_movie_availability(movie) %}
+    {% if movie_availability != false %}
 
-      <div>
-        {# I hate doing it this way #}
+      <div id="movie">
 
-        {% if movie.field_movie_paragraph.entity.field_monday.value == 1 %}
-          <p style="color:green;">Monday: Available for reservation.</p>
-        {% else %}
-          <p style="color:red">Monday: Not available for reservation.</p>
-        {% endif %}
+        <div>
+          {{ movie.title.value }}
+        </div>
 
-        {% if movie.field_movie_paragraph.entity.field_tuesday.value == 1 %}
-          <p style="color:green;">Tuesday: Available for reservation.</p>
-        {% else %}
-          <p style="color:red">Tuesday: Not available for reservation.</p>
-        {% endif %}
+        <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" style="height: 200px;"  alt="No img"/>
 
-        {% if movie.field_movie_paragraph.entity.field_wednesday.value == 1 %}
-          <p style="color:green;">Wednesday: Available for reservation.</p>
-        {% else %}
-          <p style="color:red">Wednesday: Not available for reservation.</p>
-        {% endif %}
+        {% autoescape false %}
+          <div>{{ movie.field_description.value }}</div>
+        {% endautoescape %}
 
-        {% if movie.field_movie_paragraph.entity.field_thursday.value == 1 %}
-          <p style="color:green;">Thursday: Available for reservation.</p>
-        {% else %}
-          <p style="color:red">Thursday: Not available for reservation.</p>
-        {% endif %}
+        <div>
+          <p>
+            Movie is available for:
+          </p>
+          {% for key in movie_availability|keys %}
+            <p style="color:green;">
+              {{ key }}
+            </p>
+          {% endfor %}
+        </div>
 
-        {% if movie.field_movie_paragraph.entity.field_friday.value == 1 %}
-          <p style="color:green;">Friday: Available for reservation.</p>
-        {% else %}
-          <p style="color:red">Friday: Not available for reservation.</p>
-        {% endif %}
       </div>
+      <br>
 
-    </div>
-    <br>
+    {% endif %}
   {% endfor %}
 </div>
 
-<div>
-  {{ breakpoint(movies[1].field_movie_paragraph.entity.field_tuesday.value) }}
-</div>
+
