@@ -18,11 +18,19 @@ class AllMoviesListing extends ControllerBase {
 
   public function movie_reservation()
   {
+    if(empty($_POST['categories'])){
+      return [
+        '#theme' => 'movie-reservation',
+        '#pageTitle' => 'Welcome to our movie reservation page',
+        '#movie_categories' => $this->get_all_movie_categories(),
+        '#movies' => $this->get_all_movie_nodes(),
+      ];
+    }
     return [
       '#theme' => 'movie-reservation',
       '#pageTitle' => 'Welcome to our movie reservation page',
       '#movie_categories' => $this->get_all_movie_categories(),
-      '#movies' => $this->get_all_movie_nodes(),
+      '#movies' => $this->get_movies_by_categories(),
     ];
   }
 
@@ -42,6 +50,34 @@ class AllMoviesListing extends ControllerBase {
   {
     $allNodeIds = \Drupal::entityQuery('node')->condition('type', 'movies')->execute();
     return Node::loadMultiple($allNodeIds);
+  }
+
+  public function get_movies_by_title($title = null)
+  {
+    $allNodeIds = \Drupal::entityQuery('node')
+      ->condition('type', 'movies')
+      ->condition('title', $title, 'CONTAINS' )
+      ->execute();
+    return Node::loadMultiple($allNodeIds);
+  }
+
+  public function get_movies_by_categories()
+  {
+    $category_tid = [];
+    foreach($_POST['categories'] as $c_tid){
+      $category_tid[] = $c_tid;
+    }
+
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
+    foreach($category_tid as $tid)
+    {
+      $group = $query
+        ->andConditionGroup()
+        ->condition('field_category.target_id', $tid);
+      $query->condition($group);
+    }
+    $entity_ids = $query->execute();
+    return Node::loadMultiple($entity_ids);
   }
 
 }
