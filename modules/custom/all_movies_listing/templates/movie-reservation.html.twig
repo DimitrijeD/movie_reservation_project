@@ -1,3 +1,4 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <h1>
     {{ pageTitle }}
 </h1>
@@ -6,14 +7,16 @@
   Please select movie genre for which you would like to make a reservation
 </p>
 
+
 <div>
-  <select>
-  {% for category in movie_categories %}
-    <option value="{{ category.tid }}">
-      {{ category.name }}
-    </option>
-  {% endfor %}
-  </select>
+  <form action="" method="post">
+    {% for category in movie_categories %}
+      <input type="checkbox" name="categories[]" value="{{ category.tid }}" /> {{ category.name }}
+      <br>
+    {% endfor %}
+    <input type="submit" value="Submit">
+  </form>
+  <br>
 </div>
 
 <div>
@@ -23,8 +26,7 @@
     {% set movie_availability = get_movie_availability(movie) %}
     {% if movie_availability != false %}
       {% set no_movie_available = false %}
-      <div id="movie">
-
+      <div class="movie" id="{{ movie.nid.value }}">
         <div>
           {{ movie.title.value }}
         </div>
@@ -44,6 +46,10 @@
               {{ key }}
             </p>
           {% endfor %}
+        </div>
+
+        <div>
+          <button type="button" class="reserve_movie_button" id="btn_{{ movie.nid.value }}" hidden>Reserve this movie</button>
         </div>
 
       </div>

@@ -2,12 +2,21 @@
 
 namespace Drupal\all_movies_listing\Extension;
 
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class MovieAvailabilityExtension extends AbstractExtension
 {
+  private $days_in_week = [
+    'monday'    => 'field_monday',
+    'tuesday'   => 'field_tuesday',
+    'wednesday' => 'field_wednesday',
+    'thursday'  => 'field_thursday',
+    'friday'    => 'field_friday',
+  ];
+
   public function getName()
   {
     return 'movie_availability_extension';
@@ -35,15 +44,8 @@ class MovieAvailabilityExtension extends AbstractExtension
     }
 
     $available_days = [];
-    $days_in_week = [
-      'monday'    => 'field_monday',
-      'tuesday'   => 'field_tuesday',
-      'wednesday' => 'field_wednesday',
-      'thursday'  => 'field_thursday',
-      'friday'    => 'field_friday',
-    ];
 
-    foreach($days_in_week as $day => $field)
+    foreach($this->days_in_week as $day => $field)
     {
       $text = $movie_paragraph->{$field}->getValue();
       if($text != null)
@@ -62,4 +64,5 @@ class MovieAvailabilityExtension extends AbstractExtension
 
     return false;
   }
+
 }

@@ -1,0 +1,7 @@
+movie-reservation:
+  version: 1.0
+  js:
+    js/movie-reservation.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
