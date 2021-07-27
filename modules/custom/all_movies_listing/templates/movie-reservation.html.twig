@@ -1,28 +1,4 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-  $(document).ready(function(){
-    $(".movie").hover(function(){
-      $(this).css("background-color", "#e6f0ff");
-    }, function(){
-      $(this).css("background-color", "white");
-    });
-  });
-
-  function showReserveMovieButton(movie_id) {
-    var x = document.getElementById("btn_"+movie_id);
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
-      x.style.display = "none";
-    }
-  }
-
-  function reserveMovie(btn_id){
-    alert(btn_id);
-  }
-
-</script>
-
 <h1>
     {{ pageTitle }}
 </h1>
@@ -50,7 +26,7 @@
     {% set movie_availability = get_movie_availability(movie) %}
     {% if movie_availability != false %}
       {% set no_movie_available = false %}
-      <div class="movie" id="{{ movie.nid.value }}" onclick="showReserveMovieButton(this.id)" >
+      <div class="movie" id="{{ movie.nid.value }}">
         <div>
           {{ movie.title.value }}
         </div>
@@ -73,7 +49,7 @@
         </div>
 
         <div>
-          <button type="button" id="btn_{{ movie.nid.value }}" onclick="reserveMovie(this.id)" hidden>Reserve this movie</button>
+          <button type="button" class="reserve_movie_button" id="btn_{{ movie.nid.value }}" hidden>Reserve this movie</button>
         </div>
 
       </div>
