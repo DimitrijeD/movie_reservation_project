@@ -1,7 +1,13 @@
 var movie_divs = document.querySelectorAll(".movie");
 var reserve_movie_button = document.querySelectorAll(".reserve_movie_button");
 var popup = document.querySelectorAll(".popup");
-// var btn_final_reserve_movie = document.querySelectorAll(".btn_final_reserve_movie");
+
+class EventHelper{
+  //fixes issues with requirement to click twice on movie div first time page is loaded. Adding css file didnt fix, this did.
+  static add_display_none(){
+    return "none";
+  }
+}
 
 // Attach event listeners
 for(let i = 0; i < movie_divs.length; i++){
@@ -20,7 +26,7 @@ for(let i = 0; i < movie_divs.length; i++){
       btn_for_day.addEventListener("click", function(){
         finalReserveMovie(this.id);
       });
-      btn_for_day.style.display = "none";
+      btn_for_day.style.display = EventHelper.add_display_none();
     }
   }
   movie_divs[i].addEventListener("click", showReserveMovieButton, false);
@@ -28,13 +34,12 @@ for(let i = 0; i < movie_divs.length; i++){
   reserve_movie_button[i].addEventListener("click", function(){
     reserveMovie(this.id);
   });
-  // next line fixes issue with requirement to click twice on movie div first time page is loaded. Adding css file didnt fix, this did.
-  reserve_movie_button[i].style.display = "none";
+  reserve_movie_button[i].style.display = EventHelper.add_display_none();
 
   popup[i].addEventListener("click", function(){
     showPopup(this.id);
   });
-  popup[i].style.display = "none";
+  popup[i].style.display = EventHelper.add_display_none();
 
 }
 
@@ -50,9 +55,7 @@ function showReserveMovieButton() {
   var button = document.getElementById("btn_"+this.id);
   if (button.style.display === "none") {
     button.style.display = "block";
-  } /*else {
-    button.style.display = "none";
-  }*/
+  }
 }
 
 function reserveMovie(btn_id){
@@ -64,9 +67,7 @@ function showPopup(popup_id) {
   var popup = document.getElementById(popup_id);
   if (popup.style.display === "none") {
     popup.style.display = "block";
-  } /*else {
-    popup.style.display = "none";
-  }*/
+  }
 }
 
 function showButtonForMovieByDay(id_day){
@@ -77,6 +78,10 @@ function showButtonForMovieByDay(id_day){
   }
 }
 
-function finalReserveMovie(wat){
+function finalReserveMovie(final_btn_id){
+  // final_btn_id = 'btn_4_tuesday'
+  // 'btn_' + movie_id + "_" + day_for_which_movie_is_available
   console.log('from clicked final button which than finaly reserves a movie for that day');
 }
+
+
