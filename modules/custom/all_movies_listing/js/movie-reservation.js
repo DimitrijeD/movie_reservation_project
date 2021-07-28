@@ -40,7 +40,6 @@ for(let i = 0; i < movie_divs.length; i++){
     showPopup(this.id);
   });
   popup[i].style.display = EventHelper.add_display_none();
-
 }
 
 $(document).ready(function(){

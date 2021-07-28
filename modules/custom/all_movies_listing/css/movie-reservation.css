@@ -2,10 +2,6 @@
   height: 200px;
 }
 
-.reserve_movie_button{
-  display: none;
-}
-
 .availability_by_day{
   padding-left: 10px;
   color:green;
