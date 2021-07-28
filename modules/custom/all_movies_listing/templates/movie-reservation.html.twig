@@ -7,7 +7,6 @@
   Please select movie genre for which you would like to make a reservation
 </p>
 
-
 <div>
   <form action="" method="post">
     {% for category in movie_categories %}
@@ -27,29 +26,34 @@
     {% if movie_availability != false %}
       {% set no_movie_available = false %}
       <div class="movie" id="{{ movie.nid.value }}">
-        <div>
+        <p class="movie_title">
           {{ movie.title.value }}
-        </div>
+        </p>
 
-        <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" style="height: 200px;"  alt="No img"/>
+        <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" class="movie_img" alt="No img"/>
 
         {% autoescape false %}
           <div>{{ movie.field_description.value }}</div>
         {% endautoescape %}
 
-        <div>
-          <p>
-            Movie is available for:
-          </p>
-          {% for key in movie_availability|keys %}
-            <p style="color:green;">
-              {{ key }}
-            </p>
-          {% endfor %}
+        <div class="reserve_movie_button" id="btn_{{ movie.nid.value }}">
+          <button type="button" >Reserve this movie</button>
         </div>
 
-        <div>
-          <button type="button" class="reserve_movie_button" id="btn_{{ movie.nid.value }}" hidden>Reserve this movie</button>
+        <div id="popup_{{ movie.nid.value }}" class="popup" hidden>
+          <form action="">
+            <div>
+              <p>
+                Movie is available for:
+              </p>
+              {% for key in movie_availability|keys %}
+                <p id="{{ movie.nid.value }}_{{ key }}" class="availability_by_day">
+                  {{ key }}
+                </p>
+                <button type="button" class="btn_final_reserve_movie" id="btn_{{ movie.nid.value }}_{{ key }}">Confirm your movie reservation</button>
+              {% endfor %}
+            </div>
+          </form>
         </div>
 
       </div>

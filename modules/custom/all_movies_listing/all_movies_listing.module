@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @param $existing
+ * @param $type
+ * @param $theme
+ * @param $path
+ * @return null[][][]
+ */
 function all_movies_listing_theme($existing, $type, $theme, $path){
 
   return [
@@ -20,6 +27,11 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
 
 }
 
+/**
+ * Connects CSS and JS libraries from this modile with templates.
+ *
+ * @param array $page
+ */
 function all_movies_listing_page_attachments(array &$page) {
   $page['#attached']['library'][] = 'all_movies_listing/movie-reservation';
 }

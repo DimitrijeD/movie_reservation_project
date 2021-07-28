@@ -29,6 +29,16 @@ class MovieAvailabilityExtension extends AbstractExtension
     ];
   }
 
+  /**
+   * Checks if movie is available for reservation.
+   *
+   * If movie is available for any day of the week, it will return those days, othrwise returns false.
+   * It also chechs if movie_paragraph is set because some movies might not have paragraph instantiated, in that case, returns false in order to show to user
+   * that movie is not available for that day. This function can be replaced with entityQuery which only retuns movies which are available for at aleast one day.
+   *
+   * @param $movie
+   * @return array|false
+   */
   public function get_movie_availability($movie)
   {
     $paragraph = $movie->field_movie_paragraph->getValue();

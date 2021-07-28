@@ -1,5 +1,8 @@
 movie-reservation:
   version: 1.0
+  css:
+    theme:
+      css/movie-reservation.css: {}
   js:
     js/movie-reservation.js: {}
   dependencies:
