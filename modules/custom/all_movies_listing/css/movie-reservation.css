@@ -1,0 +1,19 @@
+.movie_img{
+  height: 200px;
+}
+
+.availability_by_day{
+  padding-left: 10px;
+  color:green;
+}
+
+.btn_final_reserve_movie{
+  display: none;
+  margin-left: 20px;
+  color:darkgreen;
+}
+
+.popup{
+  background-color: #b3d1ff;
+}
+
