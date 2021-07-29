@@ -25,7 +25,7 @@ class MovieAvailabilityExtension extends AbstractExtension
   public function getFunctions()
   {
     return [
-      new TwigFunction("get_movie_availability", [$this, "get_movie_availability"] ),
+      new TwigFunction("get_movie_availability", [$this, "get_movie_availability"]),
     ];
   }
 

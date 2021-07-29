@@ -38,6 +38,6 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
  *
  * @param array $page
  */
-function all_movies_listing_page_attachments(array &$page) {
+function all_movies_listing_page_attachments(array &$page){
   $page['#attached']['library'][] = 'all_movies_listing/movie-reservation';
 }

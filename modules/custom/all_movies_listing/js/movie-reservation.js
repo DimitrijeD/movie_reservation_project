@@ -80,13 +80,13 @@ function showButtonForMovieByDay(id_day){
 function finalReserveMovie(final_btn_id){
   // final_btn_id = 'btn_4_tuesday'
   // 'btn_' + movie_id + "_" + day_for_which_movie_is_available
-  console.log('from clicked final button which than finaly reserves a movie for that day');
+  console.log('from clicked final button which than finally reserves a movie for that day');
 }
 
 function validate_customer_form(){
   let customer_name = document.forms["customer_name_form"]["customer_name"].value;
   let errors = [];
-  if (customer_name == "") {
+  if (customer_name === "") {
 
     errors.push("Name must be filled out.");
   }
