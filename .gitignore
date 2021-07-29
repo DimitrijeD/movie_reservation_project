@@ -15,6 +15,7 @@
 /modules/contrib
 /modules/entity_reference_revisions
 /modules/paragraphs
+/modules/csv_serialization
 
 # Ignore configuration files that may contain sensitive information
 /sites/*/*settings*.php

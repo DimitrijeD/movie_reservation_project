@@ -83,4 +83,28 @@ function finalReserveMovie(final_btn_id){
   console.log('from clicked final button which than finaly reserves a movie for that day');
 }
 
+function validate_customer_form() {
+  let customer_name = document.forms["customer_name_form"]["customer_name"].value;
+  let errors = [];
+  if (customer_name == "") {
 
+    errors.push("Name must be filled out.");
+  }
+  if (customer_name[0] !== customer_name[0].toUpperCase()) {
+    errors.push("First letter must be capital!");
+  }
+  for(let i = 0; i < customer_name.length; i++)
+  {
+    if( !isNaN(customer_name[i]) ){
+      errors.push("Name can't contain numbers.");
+      break;
+    }
+  }
+  if(errors.length !== 0){
+    var all_errors = "";
+    for(let j = 0; j < errors.length; j++){
+      all_errors = all_errors + errors[j] + '\n';
+    }
+    alert(all_errors);
+  }
+}

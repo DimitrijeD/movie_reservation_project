@@ -11,3 +11,10 @@ all_movies_listing.movie_reservation:
     _controller: '\Drupal\all_movies_listing\Controller\AllMoviesListing::movie_reservation'
   requirements:
     _permission: 'access content'
+
+all_movies_listing.movie_exporter:
+  path: '/movie-exporter'
+  defaults:
+    _controller: '\Drupal\all_movies_listing\Controller\AllMoviesListing::movie_exporter'
+  requirements:
+    _permission: 'access content'

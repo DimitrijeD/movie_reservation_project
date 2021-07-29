@@ -22,17 +22,52 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
         'movie_categories' => NULL,
         'movies' => NULL,
       ]
-    ]
+    ],
+    'movie-exporter' => [
+      'variables' => [
+        'pageTitle' => NULL,
+        'movies_for_export' => NULL,
+      ]
+    ],
   ];
 
 }
 
 /**
- * Connects CSS and JS libraries from this modile with templates.
+ * Connects CSS and JS libraries from this module with templates.
  *
  * @param array $page
  */
 function all_movies_listing_page_attachments(array &$page) {
   $page['#attached']['library'][] = 'all_movies_listing/movie-reservation';
 }
+
+/*function all_movies_listing_menu()
+{
+  $items = array();
+
+  $items['admin/config/all_movies_listingforadmin'] = array(
+    //this section is for  create a  section
+    'title' => t('DRUPALST') ,//this section will create  under admin->config
+    'description' => t('Drupalst tools') ,
+    'weight' => -100,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'position' => 'right',
+  );
+
+  $items['admin/config/all_movies_listingforadmin/customform_adminuser'] = array(
+    //this should be the path of your admin listing page
+    'title' => 'Manage all_movies_listingforadmin_list',
+    'description' => 'Allows admins to manage customform_adminus',
+    'page callback' => 'customformadminusers_admin_overview',
+    'page arguments' => array('products_admin_settings_form'),
+    'access arguments' => array('administer products'),
+    'file' => 'customform_adminuserattributes.admin.inc',
+    'weight' => -10,
+  );
+  return $items;
+}*/
 
