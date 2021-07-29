@@ -59,7 +59,7 @@ class AllMoviesListing extends ControllerBase {
   public function get_all_movie_categories()
   {
     $terms =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('movie_type');
-    foreach ($terms as $term) {
+    foreach ($terms as $term){
       $term_data[] = [
         'tid' => $term->tid,
         'name' => $term->name,
@@ -110,8 +110,7 @@ class AllMoviesListing extends ControllerBase {
     }
 
     $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
-    foreach($category_tid as $tid)
-    {
+    foreach($category_tid as $tid){
       $group = $query
         ->andConditionGroup()
         ->condition('field_category.target_id', $tid);
@@ -131,7 +130,8 @@ class AllMoviesListing extends ControllerBase {
     return \Drupal::request()->request->get('categories');
   }
 
-  public function movie_exporter(){
+  public function movie_exporter()
+  {
     return [
       '#theme' => 'movie-exporter',
       '#pageTitle' => 'Movie exporter form',
@@ -139,11 +139,13 @@ class AllMoviesListing extends ControllerBase {
     ];
   }
 
-  public function get_users_roles(){
+  public function get_users_roles()
+  {
     return \Drupal::currentUser()->getRoles();
   }
 
-  public function get_movies_for_export(){
+  public function get_movies_for_export()
+  {
     $movies_for_export = \Drupal::entityQuery('node')
       ->condition('type', 'movies')
       ->condition('field_include_in_exporter','1')
@@ -160,11 +162,9 @@ class AllMoviesListing extends ControllerBase {
   // https://stackoverflow.com/questions/4345554/convert-a-php-object-to-an-associative-array?rq=1
   public function object_to_array($data)
   {
-    if (is_array($data) || is_object($data))
-    {
+    if (is_array($data) || is_object($data)){
       $result = [];
-      foreach ($data as $key => $value)
-      {
+      foreach ($data as $key => $value){
         $result[$key] = (is_array($data) || is_object($data)) ? $this->object_to_array($value) : $value;
       }
       return $result;
@@ -172,7 +172,8 @@ class AllMoviesListing extends ControllerBase {
     return $data;
   }
 
-  public function array2xml($data, $root = null){
+  public function array2xml($data, $root = null)
+  {
     $xml = new SimpleXMLElement($root ? '<' . $root . '/>' : '<root/>');
     array_walk_recursive($data, function($value, $key)use($xml){
       $xml->addChild($key, $value);
