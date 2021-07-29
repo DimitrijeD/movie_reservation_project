@@ -50,7 +50,7 @@ $(document).ready(function(){
   });
 });
 
-function showReserveMovieButton() {
+function showReserveMovieButton(){
   var button = document.getElementById("btn_"+this.id);
   if (button.style.display === "none") {
     button.style.display = "block";
@@ -62,7 +62,7 @@ function reserveMovie(btn_id){
   showPopup('popup_'+split_id[1]);
 }
 
-function showPopup(popup_id) {
+function showPopup(popup_id){
   var popup = document.getElementById(popup_id);
   if (popup.style.display === "none") {
     popup.style.display = "block";
@@ -72,7 +72,7 @@ function showPopup(popup_id) {
 function showButtonForMovieByDay(id_day){
   let split_id = id_day.split("_");
   var btn_final_reserve_movie = document.getElementById("btn_"+split_id[0]+"_"+split_id[1]);
-  if (btn_final_reserve_movie.style.display === "none") {
+  if (btn_final_reserve_movie.style.display === "none"){
     btn_final_reserve_movie.style.display = "block";
   }
 }
@@ -80,7 +80,30 @@ function showButtonForMovieByDay(id_day){
 function finalReserveMovie(final_btn_id){
   // final_btn_id = 'btn_4_tuesday'
   // 'btn_' + movie_id + "_" + day_for_which_movie_is_available
-  console.log('from clicked final button which than finaly reserves a movie for that day');
+  console.log('from clicked final button which than finally reserves a movie for that day');
 }
 
+function validate_customer_form(){
+  let customer_name = document.forms["customer_name_form"]["customer_name"].value;
+  let errors = [];
+  if (customer_name === "") {
 
+    errors.push("Name must be filled out.");
+  }
+  if (customer_name[0] !== customer_name[0].toUpperCase()){
+    errors.push("First letter must be capital!");
+  }
+  for(let i = 0; i < customer_name.length; i++){
+    if( !isNaN(customer_name[i]) ){
+      errors.push("Name can't contain numbers.");
+      break;
+    }
+  }
+  if(errors.length !== 0){
+    var all_errors = "";
+    for(let j = 0; j < errors.length; j++){
+      all_errors = all_errors + errors[j] + '\n';
+    }
+    alert(all_errors);
+  }
+}

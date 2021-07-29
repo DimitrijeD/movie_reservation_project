@@ -22,17 +22,22 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
         'movie_categories' => NULL,
         'movies' => NULL,
       ]
-    ]
+    ],
+    'movie-exporter' => [
+      'variables' => [
+        'pageTitle' => NULL,
+        'movies_for_export' => NULL,
+      ]
+    ],
   ];
 
 }
 
 /**
- * Connects CSS and JS libraries from this modile with templates.
+ * Connects CSS and JS libraries from this module with templates.
  *
  * @param array $page
  */
-function all_movies_listing_page_attachments(array &$page) {
+function all_movies_listing_page_attachments(array &$page){
   $page['#attached']['library'][] = 'all_movies_listing/movie-reservation';
 }
-

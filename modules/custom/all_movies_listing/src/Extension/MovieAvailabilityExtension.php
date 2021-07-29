@@ -25,7 +25,7 @@ class MovieAvailabilityExtension extends AbstractExtension
   public function getFunctions()
   {
     return [
-      new TwigFunction("get_movie_availability", [$this, "get_movie_availability"] ),
+      new TwigFunction("get_movie_availability", [$this, "get_movie_availability"]),
     ];
   }
 
@@ -55,23 +55,18 @@ class MovieAvailabilityExtension extends AbstractExtension
 
     $available_days = [];
 
-    foreach($this->days_in_week as $day => $field)
-    {
+    foreach($this->days_in_week as $day => $field){
       $text = $movie_paragraph->{$field}->getValue();
-      if($text != null)
-      {
-        if ($text[0]['value'])
-        {
+      if($text != null){
+        if ($text[0]['value']){
           $available_days[$day] = $text[0]['value'];
         }
       }
     }
 
-    if(!empty($available_days))
-    {
+    if(!empty($available_days)){
       return $available_days;
     }
-
     return false;
   }
 
