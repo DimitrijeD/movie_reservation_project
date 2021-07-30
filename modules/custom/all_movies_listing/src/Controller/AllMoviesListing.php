@@ -33,12 +33,25 @@ class AllMoviesListing extends ControllerBase {
    */
   public function movie_reservation()
   {
+    // for $_GET
+    $customer_name_validated  = \Drupal::request()->query->get('customer_name_validated');
+    $movie_id_for_reservation = \Drupal::request()->query->get('movie_id_for_reservation');
+    $day_for_reservation      = \Drupal::request()->query->get('day_for_reservation');
+    $successful_reservation = '';
+
+    // user inserted his name correctly and clicked final button for movie reservation on specific day of the week
+    if($customer_name_validated AND $movie_id_for_reservation AND $day_for_reservation){
+      $this->reserve_movie_for_day($customer_name_validated, $movie_id_for_reservation, $day_for_reservation);
+      $successful_reservation = 'Your reservation has been recorded.';
+    }
+
     if( empty($this->get_category_filters()) ){
       return [
         '#theme' => 'movie-reservation',
         '#pageTitle' => 'Welcome to our movie reservation page',
         '#movie_categories' => $this->get_all_movie_categories(),
         '#movies' => $this->get_all_movie_nodes(),
+        '#successful_reservation' => $successful_reservation,
       ];
     }
     return [
@@ -46,11 +59,12 @@ class AllMoviesListing extends ControllerBase {
       '#pageTitle' => 'Welcome to our movie reservation page',
       '#movie_categories' => $this->get_all_movie_categories(),
       '#movies' => $this->get_movies_by_categories(),
+      '#successful_reservation' => $successful_reservation,
     ];
   }
 
   /**
-   * Function returns all available movie categories from "Movie type" vocabulary.
+   * Function returns all available movie categories(terms) from "Movie type" vocabulary.
    *
    * @return array
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
@@ -95,6 +109,17 @@ class AllMoviesListing extends ControllerBase {
   }
 
   /**
+   * Returns one movie node based on passed 'nid'
+   *
+   * @param $nid
+   * @return \Drupal\Core\Entity\EntityBase[]|\Drupal\Core\Entity\EntityInterface[]|Node[]
+   */
+  private function get_movie_by_nid($nid)
+  {
+    return Node::loadMultiple( [$nid] );
+  }
+
+  /**
    * Function for filtering movies based on user defined movie categories.
    *
    * Returns all movies which belong to exact categories user defined, no more, no less.
@@ -130,18 +155,47 @@ class AllMoviesListing extends ControllerBase {
     return \Drupal::request()->request->get('categories');
   }
 
+  public function get_users_roles()
+  {
+    return \Drupal::currentUser()->getRoles();
+  }
+
+  private function reserve_movie_for_day($customer_name, $movie_nid, $day)
+  {
+    $movie = Node::loadMultiple( [$movie_nid] );
+    $movie_name_arr = $movie[$movie_nid]->title->getValue();
+    $movie_name_str = $movie_name_arr[0]['value'];
+    $movie_categories = $movie[$movie_nid]->field_category->getValue();
+    $all_movie_categories = $this->get_all_movie_categories();
+    $str_of_all_cat_of_this_movie = '';
+
+    foreach($movie_categories as $one_cat_of_movie){
+      foreach($all_movie_categories as $all_cat_of_movies){
+        if($one_cat_of_movie['target_id'] == $all_cat_of_movies['tid']){
+          /* movie categories are save in table as: categ1/categ2/categ3/ */
+          $str_of_all_cat_of_this_movie .= $all_cat_of_movies['name'] . '/';
+        }
+      }
+    }
+    $asd = 2;
+    $connection = \Drupal::service('database');
+    $result = $connection->insert('reservations')
+      ->fields([
+        'day_of_reservation' => $day,
+        'reserved_movie_name' => $movie_name_str,
+        'reserved_movie_genre' => $str_of_all_cat_of_this_movie,
+        'customer_name' => $customer_name,
+      ])
+      ->execute();
+  }
+
   public function movie_exporter()
   {
     return [
       '#theme' => 'movie-exporter',
       '#pageTitle' => 'Movie exporter form',
-//      '#movies_for_export' => $this->get_movies_for_export(),
+      // '#movies_for_export' => $this->get_movies_for_export(),
     ];
-  }
-
-  public function get_users_roles()
-  {
-    return \Drupal::currentUser()->getRoles();
   }
 
   public function get_movies_for_export()
@@ -180,6 +234,7 @@ class AllMoviesListing extends ControllerBase {
     });
     return $xml->asXML();
   }
+
 
 }
 

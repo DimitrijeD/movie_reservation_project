@@ -3,19 +3,30 @@
     {{ pageTitle }}
 </h1>
 
-<p>
-  Please select movie genre for which you would like to make a reservation
-</p>
-
 <div>
   <form action="" method="post">
+    <label>
+      Please select movie genre for which you would like to make a reservation
+    </label>
+    <br>
     {% for category in movie_categories %}
       <input type="checkbox" name="categories[]" value="{{ category.tid }}" /> {{ category.name }}
       <br>
     {% endfor %}
-    <input type="submit" value="Submit">
+    <input type="submit" value="Filter movies by categories">
   </form>
   <br>
+</div>
+
+<div>
+  <p>You must insert your name and click "Check your name" to be able to reserve a movie!</p>
+  <label>Type your name:</label>
+  <input type="text" name="customer_name" id="customer_name" />
+  <input type="submit" value="Check your name" onclick="validate_customer_form()">
+</div>
+
+<div>
+  <p class="successful_reservation">{{ successful_reservation }}</p>
 </div>
 
 <div>
@@ -50,7 +61,12 @@
                 <p id="{{ movie.nid.value }}_{{ key }}" class="availability_by_day">
                   {{ key }}
                 </p>
-                <button type="button" class="btn_final_reserve_movie" id="btn_{{ movie.nid.value }}_{{ key }}">Confirm your movie reservation</button>
+                <form action="" method="get">
+                  <input type="hidden" class="c_name" name="customer_name_validated" id="c_name/{{ movie.nid.value }}/{{ key }}" > 
+                  <input type="hidden" name="movie_id_for_reservation" value="{{ movie.nid.value }}">
+                  <input type="hidden" name="day_for_reservation" value="{{ key }}">
+                  <input type="submit" class="btn_final_reserve_movie" id="btn_{{ movie.nid.value }}_{{ key }}" value="Confirm your movie reservation"/>
+                </form>
               {% endfor %}
             </div>
           </form>
@@ -67,11 +83,5 @@
   {% endif %}
 </div>
 
-<div>
-  <form name="customer_name_form" onsubmit="return validate_customer_form()" method="post">
-    <label>Type your name:</label>
-    <input type="text" name="customer_name" />
-    <input type="submit" value="Submit">
-  </form>
-</div>
+
 
