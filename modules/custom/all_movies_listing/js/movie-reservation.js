@@ -80,11 +80,10 @@ function showButtonForMovieByDay(id_day){
 function finalReserveMovie(final_btn_id){
   // final_btn_id = 'btn_4_tuesday'
   // 'btn_' + movie_id + "_" + day_for_which_movie_is_available
-  console.log('from clicked final button which than finally reserves a movie for that day');
 }
 
 function validate_customer_form(){
-  let customer_name = document.forms["customer_name_form"]["customer_name"].value;
+  let customer_name = document.getElementById("customer_name").value;
   let errors = [];
   if (customer_name === "") {
 
@@ -105,5 +104,14 @@ function validate_customer_form(){
       all_errors = all_errors + errors[j] + '\n';
     }
     alert(all_errors);
+  }
+  set_all_inputs_for_customer_name(customer_name);
+  return customer_name;
+}
+
+function set_all_inputs_for_customer_name(customer_name_valid){
+  var hidden_c_name_inputs = document.querySelectorAll(".customer_name");
+  for(let i = 0; i < hidden_c_name_inputs.length; i++){
+    hidden_c_name_inputs[i].value = customer_name_valid;
   }
 }
