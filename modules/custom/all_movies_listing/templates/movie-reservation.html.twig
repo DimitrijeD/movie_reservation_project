@@ -62,9 +62,9 @@
                   {{ key }}
                 </p>
                 <form action="" method="get">
-                  <input type="hidden" class="c_name" name="customer_name_validated" id="c_name/{{ movie.nid.value }}/{{ key }}" > 
-                  <input type="hidden" name="movie_id_for_reservation" value="{{ movie.nid.value }}">
-                  <input type="hidden" name="day_for_reservation" value="{{ key }}">
+                  <input type="hidden" name="movie_reservation[customer_name_validated]" class="customer_name" id="customer_name/{{ movie.nid.value }}/{{ key }}" >
+                  <input type="hidden" name="movie_reservation[movie_id_for_reservation]" value="{{ movie.nid.value }}">
+                  <input type="hidden" name="movie_reservation[day_for_reservation]" value="{{ key }}">
                   <input type="submit" class="btn_final_reserve_movie" id="btn_{{ movie.nid.value }}_{{ key }}" value="Confirm your movie reservation"/>
                 </form>
               {% endfor %}

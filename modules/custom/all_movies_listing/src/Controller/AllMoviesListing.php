@@ -24,7 +24,7 @@ class AllMoviesListing extends ControllerBase {
   }
 
   /**
-   * Function for providing '/all-movies-listing' page with movies with page title.
+   * Function for providing '/movies-reservation' page with available movies and functionality for their reservation.
    *
    * Function calls get_category_filters() which checks $_POST if user submited movie categories,
    * and if he did, filtered movies will be passed to page based on input.
@@ -33,16 +33,19 @@ class AllMoviesListing extends ControllerBase {
    */
   public function movie_reservation()
   {
-    // for $_GET
-    $customer_name_validated  = \Drupal::request()->query->get('customer_name_validated');
-    $movie_id_for_reservation = \Drupal::request()->query->get('movie_id_for_reservation');
-    $day_for_reservation      = \Drupal::request()->query->get('day_for_reservation');
     $successful_reservation = '';
+    if(\Drupal::request()->query->get('movie_reservation') !== null){
+      $movie_reservation_all_data = \Drupal::request()->query->get('movie_reservation');
+      
+      $customer_name_validated = $movie_reservation_all_data['customer_name_validated'];
+      $movie_id_for_reservation = $movie_reservation_all_data['movie_id_for_reservation'];
+      $day_for_reservation = $movie_reservation_all_data['day_for_reservation'];
 
-    // user inserted his name correctly and clicked final button for movie reservation on specific day of the week
-    if($customer_name_validated AND $movie_id_for_reservation AND $day_for_reservation){
-      $this->reserve_movie_for_day($customer_name_validated, $movie_id_for_reservation, $day_for_reservation);
-      $successful_reservation = 'Your reservation has been recorded.';
+      // user inserted his name correctly and clicked final button for movie reservation on specific day of the week
+      if($customer_name_validated AND $movie_id_for_reservation AND $day_for_reservation){
+        $this->reserve_movie_for_day($customer_name_validated, $movie_id_for_reservation, $day_for_reservation);
+        $successful_reservation = 'Your reservation has been recorded.';
+      }
     }
 
     if( empty($this->get_category_filters()) ){
@@ -116,7 +119,7 @@ class AllMoviesListing extends ControllerBase {
    */
   private function get_movie_by_nid($nid)
   {
-    return Node::loadMultiple( [$nid] );
+    return Node::load($nid);
   }
 
   /**
@@ -155,29 +158,41 @@ class AllMoviesListing extends ControllerBase {
     return \Drupal::request()->request->get('categories');
   }
 
+  /**
+   * @return array
+   */
   public function get_users_roles()
   {
     return \Drupal::currentUser()->getRoles();
   }
 
+  /**
+   * Function for saving movie reservation.
+   *
+   * @param $customer_name
+   * @param $movie_nid
+   * @param $day
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
   private function reserve_movie_for_day($customer_name, $movie_nid, $day)
   {
-    $movie = Node::loadMultiple( [$movie_nid] );
-    $movie_name_arr = $movie[$movie_nid]->title->getValue();
+    $movie = Node::load($movie_nid);
+    $movie_name_arr = $movie->title->getValue();
     $movie_name_str = $movie_name_arr[0]['value'];
-    $movie_categories = $movie[$movie_nid]->field_category->getValue();
+    $movie_categories = $movie->field_category->getValue();
     $all_movie_categories = $this->get_all_movie_categories();
     $str_of_all_cat_of_this_movie = '';
 
     foreach($movie_categories as $one_cat_of_movie){
       foreach($all_movie_categories as $all_cat_of_movies){
         if($one_cat_of_movie['target_id'] == $all_cat_of_movies['tid']){
-          /* movie categories are save in table as: categ1/categ2/categ3/ */
+          /* movie categories are saved in table as: categ1/categ2/categ3/ */
           $str_of_all_cat_of_this_movie .= $all_cat_of_movies['name'] . '/';
         }
       }
     }
-    $asd = 2;
+
     $connection = \Drupal::service('database');
     $result = $connection->insert('reservations')
       ->fields([
@@ -194,7 +209,6 @@ class AllMoviesListing extends ControllerBase {
     return [
       '#theme' => 'movie-exporter',
       '#pageTitle' => 'Movie exporter form',
-      // '#movies_for_export' => $this->get_movies_for_export(),
     ];
   }
 
