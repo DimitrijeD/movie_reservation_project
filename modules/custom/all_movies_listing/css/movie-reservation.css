@@ -5,6 +5,7 @@
 .availability_by_day{
   padding-left: 10px;
   color:green;
+  border: solid 1px darkgreen;
 }
 
 .btn_final_reserve_movie{

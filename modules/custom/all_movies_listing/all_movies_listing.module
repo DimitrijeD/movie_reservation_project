@@ -22,6 +22,7 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
         'movie_categories' => NULL,
         'movies' => NULL,
         'successful_reservation' => NULL,
+        'halls' => NULL,
       ]
     ],
     'movie-exporter' => [
