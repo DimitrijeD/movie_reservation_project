@@ -18,6 +18,20 @@ class MovieAvailabilityExtension extends AbstractExtension
     'friday'    => 'field_friday',
   ];
 
+  // insert that movie name and date into string to show user what happened
+  // this can be used as warning to tell user that he made 2 movie reservations for same movie with option to unreserve what ever he wants
+/*  private $reservation_status = [
+    'success' => [
+      'recorded' => 'Your reservation has been successfully recorded',
+      'multiple_same_movie_reservations' => 'Your reservation has been successfully recorded, but you already have reservation for this movie', // add when how, etc.
+    ],
+
+    'failure' => [
+      'already_reserved' => 'You already have a reservation for that movie and day!',
+      'no_avail_tickets' => 'There are no more available tickets for this movie on this day.',
+    ]
+  ];*/
+
   public function getName()
   {
     return 'movie_availability_extension';
@@ -207,7 +221,6 @@ class MovieAvailabilityExtension extends AbstractExtension
   public function set_all_movie_categories($all_movie_categories)
   {
     $this->movie_categories = $this->rearange_movie_categories_structure($all_movie_categories);
-    return '';
   }
 
   /**
@@ -217,7 +230,6 @@ class MovieAvailabilityExtension extends AbstractExtension
   public function set_all_halls($halls)
   {
     $this->all_halls = $halls;
-    return '';
   }
 
   /**

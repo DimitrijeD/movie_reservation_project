@@ -19,5 +19,16 @@
 }
 
 .successful_reservation{
+  background-color: lightblue;
   color:green;
+}
+
+.reservation_message_failed{
+  background-color: lightcoral;
+}
+
+.reservation_message_critical_error{
+  background-color: black;
+  color: white;
+  font-size: 20px;
 }

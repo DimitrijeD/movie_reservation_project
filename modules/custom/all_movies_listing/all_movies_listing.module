@@ -21,7 +21,7 @@ function all_movies_listing_theme($existing, $type, $theme, $path){
         'pageTitle' => NULL,
         'movie_categories' => NULL,
         'movies' => NULL,
-        'successful_reservation' => NULL,
+        'reservation_status' => NULL,
         'halls' => NULL,
       ]
     ],

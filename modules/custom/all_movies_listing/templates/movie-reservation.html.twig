@@ -3,9 +3,8 @@
     {{ pageTitle }}
 </h1>
 
-{% set useless_a = set_all_movie_categories(movie_categories) %}
-{% set useless_b = set_all_halls(halls) %}
-{% set useless_c = get_available_movie_data(movies[14]) %}
+{{ set_all_movie_categories(movie_categories) }}
+{{ set_all_halls(halls) }}
 
 <div>
   <form action="" method="post">
@@ -23,22 +22,45 @@
 </div>
 
 <div>
-  <p>You must insert your name and click "Check your name" to be able to reserve a movie!</p>
+  <p>You must insert your name and click "Check your name" to reserve a movie!</p>
   <label>Type your name:</label>
   <input type="text" name="customer_name" id="customer_name" />
   <input type="submit" value="Check your name" onclick="validate_customer_form()">
 </div>
 
-<div>
-  {% if successful_reservation == 'already_reserved' %}
-    <p style="background-color: lightcoral;">You already have a reservation for that movie and day!</p>
+<div id="reservation_submit_status_message">
+
+  {#---------------Successfull reservation messages----------------------#}
+  {% if reservation_status == 'recorded' %}
+    <p class="successful_reservation">Your reservation has been successfully recorded.</p>
   {% endif %}
-  {% if successful_reservation == 'recorded' %}
-    <p style="color: green;">Your reservation has been successfully recorded.</p>
+  {#---------------end of successfull reservation messages---------------#}
+
+  {#----------------Failed reservation messages--------------------#}
+  {% if reservation_status == 'already_reserved' %}
+    <p class="reservation_message_failed">You already have a reservation for that movie and day!</p>
   {% endif %}
-  {% if successful_reservation == 'no_avail_tickets' %}
-    <p style="color: lightcoral;">Therea are no more available tikets for this movie on this day. - insert that movie name and date here!</p>
+
+  {% if reservation_status == 'no_avail_tickets' %}
+    <p class="reservation_message_failed">There are no more available tikets for this movie on this day. - insert that movie name and date here!</p>
   {% endif %}
+
+  {% if reservation_status == 'no_customer_name' %}
+    <p class="reservation_message_failed">You must insert name and click 'Check your name'</p>
+  {% endif %}
+  {#------------end of failed reservation messages---------------#}
+
+  {#------------Critical error messages, under no circumstances should occur in production-#}
+  {% if reservation_status == 'num_tickets_negative' %}
+    <p class="reservation_message_critical_error">Number of tickets is negative xd something in code doesnt work and I would like to know what!</p>
+  {% endif %}
+
+  {% if reservation_status == 'num_tickets_null' %}
+    <p class="reservation_message_critical_error">Number of tickets is null!</p>
+  {% endif %}
+
+  {#------------End of critical error messages----------------------------------------------#}
+
 </div>
 
 <div>
@@ -62,14 +84,13 @@
           </div>
 
           <div id="popup_{{ movie.nid.value }}" class="popup" hidden>
-            <form action="">
               <div>
                 <p>Movie is available for: </p>
                 {% for movie_air in movie_data %}
                   <p id="{{ movie.nid.value }}_{{ movie_air.day }}" class="availability_by_day">
                     Day: {{ movie_air.day }}, Time: {{ movie_air.time}}, Remaining tickets: {{ movie_air.remaining_tickets }}, Hall: {{ movie_air.hall }}
                   </p>
-                  <form action="" method="get">
+                  <form action="" method="post">
                     <input type="hidden" name="movie_reservation[customer_name_validated]" class="customer_name" id="customer_name/{{ movie.nid.value }}/{{ movie_air.day }}" >
                     <input type="hidden" name="movie_reservation[movie_id_for_reservation]" value="{{ movie.nid.value }}">
                     <input type="hidden" name="movie_reservation[day_for_reservation]" value="{{ movie_air.day }}">
@@ -78,7 +99,6 @@
                   </form>
                 {% endfor %}
               </div>
-            </form>
           </div>
         </div>
       {% endif %}

@@ -1,6 +1,6 @@
-let movie_divs = document.querySelectorAll(".movie");
-let reserve_movie_button = document.querySelectorAll(".reserve_movie_button");
-let popup = document.querySelectorAll(".popup");
+const movie_divs = document.querySelectorAll(".movie");
+const reserve_movie_button = document.querySelectorAll(".reserve_movie_button");
+const popup = document.querySelectorAll(".popup");
 
 class EventHelper{
   //fixes issues with requirement to click twice on movie div first time page is loaded. Adding css file didnt fix, this did.
@@ -11,7 +11,7 @@ class EventHelper{
 
 // Attach event listeners
 for(let i = 0; i < movie_divs.length; i++){
-  let availability_by_day = movie_divs[i].querySelectorAll(".availability_by_day");
+  const availability_by_day = movie_divs[i].querySelectorAll(".availability_by_day");
 
   if(availability_by_day){
     for(let j = 0; j < availability_by_day.length; j++){
@@ -70,7 +70,7 @@ function showPopup(popup_id){
 }
 
 function showButtonForMovieByDay(id_day){
-  let split_id = id_day.split("_");
+  const  split_id = id_day.split("_");
   let btn_final_reserve_movie = document.getElementById("btn_"+split_id[0]+"_"+split_id[1]);
   if (btn_final_reserve_movie.style.display === "none"){
     btn_final_reserve_movie.style.display = "block";
@@ -98,7 +98,7 @@ function validate_customer_form(){
       break;
     }
   }
-  if(errors.length !== 0){
+  if(errors){
     let all_errors = "";
     for(let j = 0; j < errors.length; j++){
       all_errors = all_errors + errors[j] + '\n';

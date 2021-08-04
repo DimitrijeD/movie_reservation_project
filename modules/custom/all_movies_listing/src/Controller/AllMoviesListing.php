@@ -8,7 +8,6 @@ use Drupal\serialization\Encoder\XmlEncoder;
 use SimpleXMLElement;
 
 class AllMoviesListing extends ControllerBase {
-
   /**
    * Function for providing '/all-movies-listing' page with all movies from database with page title.
    *
@@ -33,7 +32,7 @@ class AllMoviesListing extends ControllerBase {
    */
   public function movie_reservation()
   {
-    $successful_reservation = $this->user_submitted_reserve_movie_for_day();
+    $reservation_status = $this->user_submitted_reserve_movie_for_day();
 
     if( empty($this->get_category_filters()) ){
       return [
@@ -41,7 +40,7 @@ class AllMoviesListing extends ControllerBase {
         '#pageTitle' => 'Welcome to our movie reservation page',
         '#movie_categories' => $this->get_all_movie_categories(),
         '#movies' => $this->get_all_movie_nodes(),
-        '#successful_reservation' => $successful_reservation,
+        '#reservation_status' => $reservation_status,
         '#halls' => $this->get_all_hall_terms(),
       ];
     }
@@ -50,7 +49,7 @@ class AllMoviesListing extends ControllerBase {
       '#pageTitle' => 'Welcome to our movie reservation page',
       '#movie_categories' => $this->get_all_movie_categories(),
       '#movies' => $this->get_movies_by_categories(),
-      '#successful_reservation' => $successful_reservation,
+      '#reservation_status' => $reservation_status,
       '#halls' => $this->get_all_hall_terms(),
     ];
   }
@@ -84,22 +83,32 @@ class AllMoviesListing extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  private function user_submitted_reserve_movie_for_day(){
-    $successful_reservation = '';
-    if(\Drupal::request()->query->get('movie_reservation') !== null){
-      $movie_reservation_all_data = \Drupal::request()->query->get('movie_reservation');
+  private function user_submitted_reserve_movie_for_day()
+  {
+    $reservation_status = '';
+    if(\Drupal::request()->request->get('movie_reservation') !== null){
+      $movie_reservation_all_data = \Drupal::request()->request->get('movie_reservation');
 
       $customer_name_validated = $movie_reservation_all_data['customer_name_validated'];
       $movie_id_for_reservation = $movie_reservation_all_data['movie_id_for_reservation'];
       $day_for_reservation = $movie_reservation_all_data['day_for_reservation'];
       $air_info_id = $movie_reservation_all_data['air_info_id'];
 
+      if( empty($customer_name_validated) ){
+        return 'no_customer_name';
+      }
+
       // user inserted his name correctly and clicked final button for movie reservation on specific day of the week
-      if($customer_name_validated AND $movie_id_for_reservation AND $day_for_reservation){
-        $successful_reservation = $this->reserve_movie_for_day($customer_name_validated, $movie_id_for_reservation, $day_for_reservation, $air_info_id);
+      if($customer_name_validated && $movie_id_for_reservation && $day_for_reservation){
+        $reservation_status = $this->reserve_movie_for_day(
+          $customer_name_validated,
+          $movie_id_for_reservation,
+          $day_for_reservation,
+          $air_info_id
+        );
       }
     }
-    return $successful_reservation;
+    return $reservation_status;
   }
 
   /**
@@ -189,7 +198,7 @@ class AllMoviesListing extends ControllerBase {
    * Function for saving movie reservation.
    *
    * @todo save categories as JSON or categories ID in stead of str1/str2/ ...
-   * @todo No check exists if query for reservation was successfull of not - conn might break or something.
+   * @todo No check exists if query for reservation was successful of not - conn might break or something.
    *
    * @param $customer_name
    * @param $movie_nid
@@ -206,8 +215,6 @@ class AllMoviesListing extends ControllerBase {
     $all_movie_categories = $this->get_all_movie_categories();
     $str_of_all_cat_of_this_movie = '';
 
-    // nznm sto sam ovo radio kad je useless
-    $air_date = '';
 
     // if statement cant be on start of the function because title ins't loaded yet, only movie tile_id :/
     // must be '> 0' because some duplicate rows already exist in table. Once table is truncated, this can be changed to != 1
@@ -226,19 +233,31 @@ class AllMoviesListing extends ControllerBase {
 
     // first check if there are any remaining tickets available just in case user didnt reload page in a while
     $current_num_of_remaining_tickets = $this->get_num_remaining_tickets_for_airing($air_info_id);
-    if($current_num_of_remaining_tickets > 0){
-      // Update number of remaining tickets to -1
-      $this->decrement_num_remaining_tickets_after_reservation($air_info_id, $current_num_of_remaining_tickets);
-      $this->save_reservation_in_db($day, $movie_name_str, $str_of_all_cat_of_this_movie, $customer_name, $air_date, $air_info_id);
-      return 'recorded';
+
+    switch ($current_num_of_remaining_tickets){
+      case $current_num_of_remaining_tickets > 0:
+        $this->decrement_num_remaining_tickets($air_info_id, $current_num_of_remaining_tickets);
+        $this->save_reservation_in_db(
+          $day,
+          $movie_name_str,
+          $str_of_all_cat_of_this_movie,
+          $customer_name,
+          $air_info_id
+        );
+        return 'recorded';
+
+      case $current_num_of_remaining_tickets == 0:
+        return 'no_avail_tickets';
+
+      case $current_num_of_remaining_tickets < 0:
+        return 'num_tickets_negative';
+
+      case $current_num_of_remaining_tickets === NULL:
+        return 'num_tickets_null';
+
+        default:
+          return '';
     }
-    if ($current_num_of_remaining_tickets == 0){
-      return 'no_avail_tickets';
-    }
-    if ($current_num_of_remaining_tickets < 0){
-      return 'Number of tickets is negative xd something in code doesnt work and I would like to know what!';
-    }
-    return '';
   }
 
   /**
@@ -251,7 +270,7 @@ class AllMoviesListing extends ControllerBase {
    * @param $air_date
    * @param $air_info_id
    */
-  private function save_reservation_in_db($day, $movie_name_str, $str_of_all_cat_of_this_movie, $customer_name, $air_date, $air_info_id)
+  private function save_reservation_in_db($day, $movie_name_str, $str_of_all_cat_of_this_movie, $customer_name, $air_info_id)
   {
     $connection = \Drupal::service('database');
     $result = $connection->insert('reservations')
@@ -260,19 +279,19 @@ class AllMoviesListing extends ControllerBase {
         'reserved_movie_name' => $movie_name_str,
         'reserved_movie_genre' => $str_of_all_cat_of_this_movie,
         'customer_name' => $customer_name,
-        'movie_air_date' => $air_date,
+        'movie_air_date' => '',
         'field_movie_air_info_target_id' => $air_info_id,
       ])
       ->execute();
   }
 
   /**
-   * Decrements number of tickets for selected movie airing after save_reservation_in_db().
+   * Decrements number of tickets for selected movie airing.
    *
    * @param $air_info_id
    * @param $tickets_remaining
    */
-  private function decrement_num_remaining_tickets_after_reservation($air_info_id, $tickets_remaining)
+  private function decrement_num_remaining_tickets($air_info_id, $tickets_remaining)
   {
     $tickets_remaining = $tickets_remaining - 1;
     $connection = \Drupal::service('database');
@@ -290,8 +309,11 @@ class AllMoviesListing extends ControllerBase {
    * @param $air_info_id
    * @return mixed
    */
-  private function get_num_remaining_tickets_for_airing($air_info_id)
+  private function get_num_remaining_tickets_for_airing($air_info_id = NULL)
   {
+    if($air_info_id == NULL){
+      return '';
+    }
     $database = \Drupal::database();
     $sql = "SELECT field_num_remain_tickets_value FROM paragraph__field_num_remain_tickets WHERE entity_id = '{$air_info_id}'";
     $query = $database->query($sql);
