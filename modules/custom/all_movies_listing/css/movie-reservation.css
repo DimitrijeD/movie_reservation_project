@@ -5,6 +5,7 @@
 .availability_by_day{
   padding-left: 10px;
   color:green;
+  border: solid 1px darkgreen;
 }
 
 .btn_final_reserve_movie{
@@ -18,5 +19,16 @@
 }
 
 .successful_reservation{
+  background-color: lightblue;
   color:green;
+}
+
+.reservation_message_failed{
+  background-color: lightcoral;
+}
+
+.reservation_message_critical_error{
+  background-color: black;
+  color: white;
+  font-size: 20px;
 }

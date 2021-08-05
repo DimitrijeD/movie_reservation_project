@@ -3,6 +3,9 @@
     {{ pageTitle }}
 </h1>
 
+{{ set_all_movie_categories(movie_categories) }}
+{{ set_all_halls(halls) }}
+
 <div>
   <form action="" method="post">
     <label>
@@ -19,69 +22,90 @@
 </div>
 
 <div>
-  <p>You must insert your name and click "Check your name" to be able to reserve a movie!</p>
+  <p>You must insert your name and click "Check your name" to reserve a movie!</p>
   <label>Type your name:</label>
   <input type="text" name="customer_name" id="customer_name" />
   <input type="submit" value="Check your name" onclick="validate_customer_form()">
 </div>
 
-<div>
-  <p class="successful_reservation">{{ successful_reservation }}</p>
+<div id="reservation_submit_status_message">
+
+  {#---------------Successfull reservation messages----------------------#}
+  {% if reservation_status == 'recorded' %}
+    <p class="successful_reservation">Your reservation has been successfully recorded.</p>
+  {% endif %}
+  {#---------------end of successfull reservation messages---------------#}
+
+  {#----------------Failed reservation messages--------------------#}
+  {% if reservation_status == 'already_reserved' %}
+    <p class="reservation_message_failed">You already have a reservation for that movie and day!</p>
+  {% endif %}
+
+  {% if reservation_status == 'no_avail_tickets' %}
+    <p class="reservation_message_failed">There are no more available tikets for this movie on this day. - insert that movie name and date here!</p>
+  {% endif %}
+
+  {% if reservation_status == 'no_customer_name' %}
+    <p class="reservation_message_failed">You must insert name and click 'Check your name'</p>
+  {% endif %}
+  {#------------end of failed reservation messages---------------#}
+
+  {#------------Critical error messages, under no circumstances should occur in production-#}
+  {% if reservation_status == 'num_tickets_negative' %}
+    <p class="reservation_message_critical_error">Number of tickets is negative xd something in code doesnt work and I would like to know what!</p>
+  {% endif %}
+
+  {% if reservation_status == 'num_tickets_null' %}
+    <p class="reservation_message_critical_error">Number of tickets is null!</p>
+  {% endif %}
+
+  {#------------End of critical error messages----------------------------------------------#}
+
 </div>
 
 <div>
   {% set no_movie_available = true %}
-
   {% for movie in movies %}
-    {% set movie_availability = get_movie_availability(movie) %}
-    {% if movie_availability != false %}
-      {% set no_movie_available = false %}
-      <div class="movie" id="{{ movie.nid.value }}">
-        <p class="movie_title">
-          {{ movie.title.value }}
-        </p>
 
-        <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" class="movie_img" alt="No img"/>
+    {#Checks if movie has at least one airing#}
+    {% if movie.field_movie_air_info.0.entity.field_num_remain_tickets is not empty %}
 
-        {% autoescape false %}
-          <div>{{ movie.field_description.value }}</div>
-        {% endautoescape %}
+      {% set movie_data = get_available_movie_data(movie) %}
+      {% if movie_data is not null %}
+        {% set no_movie_available = false %}
+        <div class="movie" id="{{ movie.nid.value }}">
+          <p class="movie_title">{{ movie.title.value }}</p>
+          <img src="{{ file_url(movie.field_image_field.0.entity.uri.value) }}" class="movie_img" alt="No img"/>
+          {% autoescape false %}
+            <div>{{ movie.field_description.value }}</div>
+          {% endautoescape %}
+          <div class="reserve_movie_button" id="btn_{{ movie.nid.value }}">
+            <button type="button" >Reserve this movie</button>
+          </div>
 
-        <div class="reserve_movie_button" id="btn_{{ movie.nid.value }}">
-          <button type="button" >Reserve this movie</button>
+          <div id="popup_{{ movie.nid.value }}" class="popup" hidden>
+              <div>
+                <p>Movie is available for: </p>
+                {% for movie_air in movie_data %}
+                  <p id="{{ movie.nid.value }}_{{ movie_air.day }}" class="availability_by_day">
+                    Day: {{ movie_air.day }}, Time: {{ movie_air.time}}, Remaining tickets: {{ movie_air.remaining_tickets }}, Hall: {{ movie_air.hall }}
+                  </p>
+                  <form action="" method="post">
+                    <input type="hidden" name="movie_reservation[customer_name_validated]" class="customer_name" id="customer_name/{{ movie.nid.value }}/{{ movie_air.day }}" >
+                    <input type="hidden" name="movie_reservation[movie_id_for_reservation]" value="{{ movie.nid.value }}">
+                    <input type="hidden" name="movie_reservation[day_for_reservation]" value="{{ movie_air.day }}">
+                    <input type="hidden" name="movie_reservation[air_info_id]" value="{{ movie_air.air_info_id }}">
+                    <input type="submit" class="btn_final_reserve_movie" id="btn_{{ movie.nid.value }}_{{ movie_air.day }}" value="Confirm your movie reservation"/>
+                  </form>
+                {% endfor %}
+              </div>
+          </div>
         </div>
-
-        <div id="popup_{{ movie.nid.value }}" class="popup" hidden>
-          <form action="">
-            <div>
-              <p>
-                Movie is available for:
-              </p>
-              {% for key in movie_availability|keys %}
-                <p id="{{ movie.nid.value }}_{{ key }}" class="availability_by_day">
-                  {{ key }}
-                </p>
-                <form action="" method="get">
-                  <input type="hidden" name="movie_reservation[customer_name_validated]" class="customer_name" id="customer_name/{{ movie.nid.value }}/{{ key }}" >
-                  <input type="hidden" name="movie_reservation[movie_id_for_reservation]" value="{{ movie.nid.value }}">
-                  <input type="hidden" name="movie_reservation[day_for_reservation]" value="{{ key }}">
-                  <input type="submit" class="btn_final_reserve_movie" id="btn_{{ movie.nid.value }}_{{ key }}" value="Confirm your movie reservation"/>
-                </form>
-              {% endfor %}
-            </div>
-          </form>
-        </div>
-
-      </div>
-      <br>
-
+      {% endif %}
     {% endif %}
   {% endfor %}
 
   {% if no_movie_available == true %}
-    <p>Sorry, there are no movies currently available. :(</p>
+    <p style="background-color: lightcoral;">Sorry, there are no movies currently available. :(</p>
   {% endif %}
 </div>
-
-
-

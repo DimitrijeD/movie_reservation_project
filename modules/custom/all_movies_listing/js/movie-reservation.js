@@ -1,6 +1,6 @@
-var movie_divs = document.querySelectorAll(".movie");
-var reserve_movie_button = document.querySelectorAll(".reserve_movie_button");
-var popup = document.querySelectorAll(".popup");
+const movie_divs = document.querySelectorAll(".movie");
+const reserve_movie_button = document.querySelectorAll(".reserve_movie_button");
+const popup = document.querySelectorAll(".popup");
 
 class EventHelper{
   //fixes issues with requirement to click twice on movie div first time page is loaded. Adding css file didnt fix, this did.
@@ -11,7 +11,7 @@ class EventHelper{
 
 // Attach event listeners
 for(let i = 0; i < movie_divs.length; i++){
-  let availability_by_day = movie_divs[i].querySelectorAll(".availability_by_day");
+  const availability_by_day = movie_divs[i].querySelectorAll(".availability_by_day");
 
   if(availability_by_day){
     for(let j = 0; j < availability_by_day.length; j++){
@@ -51,27 +51,27 @@ $(document).ready(function(){
 });
 
 function showReserveMovieButton(){
-  var button = document.getElementById("btn_"+this.id);
+  let button = document.getElementById("btn_"+this.id);
   if (button.style.display === "none") {
     button.style.display = "block";
   }
 }
 
 function reserveMovie(btn_id){
-  var split_id = btn_id.split("_");
+  let split_id = btn_id.split("_");
   showPopup('popup_'+split_id[1]);
 }
 
 function showPopup(popup_id){
-  var popup = document.getElementById(popup_id);
+  let popup = document.getElementById(popup_id);
   if (popup.style.display === "none") {
     popup.style.display = "block";
   }
 }
 
 function showButtonForMovieByDay(id_day){
-  let split_id = id_day.split("_");
-  var btn_final_reserve_movie = document.getElementById("btn_"+split_id[0]+"_"+split_id[1]);
+  const  split_id = id_day.split("_");
+  let btn_final_reserve_movie = document.getElementById("btn_"+split_id[0]+"_"+split_id[1]);
   if (btn_final_reserve_movie.style.display === "none"){
     btn_final_reserve_movie.style.display = "block";
   }
@@ -94,23 +94,27 @@ function validate_customer_form(){
   }
   for(let i = 0; i < customer_name.length; i++){
     if( !isNaN(customer_name[i]) ){
-      errors.push("Name can't contain numbers.");
+      errors.push("Name can contain only letters!");
       break;
     }
   }
-  if(errors.length !== 0){
-    var all_errors = "";
+  if(errors){
+    let all_errors = "";
     for(let j = 0; j < errors.length; j++){
       all_errors = all_errors + errors[j] + '\n';
     }
     alert(all_errors);
+
+    // set value to not valid input
+    set_all_inputs_for_customer_name('');
+    return '';
   }
   set_all_inputs_for_customer_name(customer_name);
   return customer_name;
 }
 
 function set_all_inputs_for_customer_name(customer_name_valid){
-  var hidden_c_name_inputs = document.querySelectorAll(".customer_name");
+  let hidden_c_name_inputs = document.querySelectorAll(".customer_name");
   for(let i = 0; i < hidden_c_name_inputs.length; i++){
     hidden_c_name_inputs[i].value = customer_name_valid;
   }
