@@ -32,17 +32,42 @@
 
   {#---------------Successfull reservation messages----------------------#}
   {% if reservation_status == 'recorded' %}
-    <p class="successful_reservation">Your reservation has been successfully recorded.</p>
+    <p class="successful_reservation">
+      Your reservation has been successfully recorded.<br>
+      Movie <span class="movie_span">"{{ movie_basic_data.title }}"</span><br>
+      Time <span class="movie_span">"{{ get_time_from_datetime(movie_basic_data.date) }}"</span><br>
+      Date <span class="movie_span">"{{ get_date_from_datetime(movie_basic_data.date) }}"</span><br>
+      Hall <span class="movie_span">"{{ movie_basic_data.hall }}"</span>
+    </p>
   {% endif %}
   {#---------------end of successfull reservation messages---------------#}
 
+  {#---------------Warning messages-----------------------------#}
+  {% if reservation_status == 'two_reservations_same_time_diff_movie' %}
+    <p class="warning_reservation">
+      You already have a reservation for other movie at that time. Show button for confirming reservation or what?
+      Movie <span class="movie_span">"{{ movie_basic_data.title }}"</span><br>
+      Time <span class="movie_span">"{{ get_time_from_datetime(movie_basic_data.date) }}"</span><br>
+      Date <span class="movie_span">"{{ get_date_from_datetime(movie_basic_data.date) }}"</span><br>
+      {#need code for same hall as well#}
+    </p>
+  {% endif %}
+  {#---------------End of warning messages----------------------#}
+
   {#----------------Failed reservation messages--------------------#}
   {% if reservation_status == 'already_reserved' %}
-    <p class="reservation_message_failed">You already have a reservation for that movie and day!</p>
+    <p class="reservation_message_failed">You already have a reservation for:
+      Movie <span class="movie_span">"{{ movie_basic_data.title }}"</span><br>
+      Time <span class="movie_span">"{{ get_time_from_datetime(movie_basic_data.date) }}"</span><br>
+      Date <span class="movie_span">"{{ get_date_from_datetime(movie_basic_data.date) }}"</span><br>
   {% endif %}
 
   {% if reservation_status == 'no_avail_tickets' %}
-    <p class="reservation_message_failed">There are no more available tikets for this movie on this day. - insert that movie name and date here!</p>
+    <p class="reservation_message_failed">There are no more available tickets for:
+      Movie <span class="movie_span">"{{ movie_basic_data.title }}"</span><br>
+      Time <span class="movie_span">"{{ get_time_from_datetime(movie_basic_data.date) }}"</span><br>
+      Date <span class="movie_span">"{{ get_date_from_datetime(movie_basic_data.date) }}"</span><br>
+    </p>
   {% endif %}
 
   {% if reservation_status == 'no_customer_name' %}

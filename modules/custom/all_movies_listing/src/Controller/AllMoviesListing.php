@@ -2,6 +2,7 @@
 namespace Drupal\all_movies_listing\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\Element\Datetime;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\serialization\Encoder\XmlEncoder;
@@ -34,24 +35,26 @@ class AllMoviesListing extends ControllerBase {
   {
     $reservation_status = $this->user_submitted_reserve_movie_for_day();
 
-    if( empty($this->get_category_filters()) ){
-      return [
-        '#theme' => 'movie-reservation',
-        '#pageTitle' => 'Welcome to our movie reservation page',
-        '#movie_categories' => $this->get_all_movie_categories(),
-        '#movies' => $this->get_all_movie_nodes(),
-        '#reservation_status' => $reservation_status,
-        '#halls' => $this->get_all_hall_terms(),
-      ];
-    }
     return [
       '#theme' => 'movie-reservation',
       '#pageTitle' => 'Welcome to our movie reservation page',
       '#movie_categories' => $this->get_all_movie_categories(),
-      '#movies' => $this->get_movies_by_categories(),
+      '#movies' => $this->which_movies(),
       '#reservation_status' => $reservation_status,
       '#halls' => $this->get_all_hall_terms(),
+      '#movie_basic_data' => $this->get_current_movie_basic_data(),
     ];
+  }
+
+  private function which_movies()
+  {
+    // no filters chosen
+    if( empty($this->get_category_filters()) ){
+      return $this->get_all_movie_nodes();
+    }
+
+    // user chose categories filter
+    return $this->get_movies_by_categories();
   }
 
   /**
@@ -89,16 +92,16 @@ class AllMoviesListing extends ControllerBase {
     if(\Drupal::request()->request->get('movie_reservation') !== null){
       $movie_reservation_all_data = \Drupal::request()->request->get('movie_reservation');
 
-      $customer_name_validated = $movie_reservation_all_data['customer_name_validated'];
+      $customer_name_validated  = $movie_reservation_all_data['customer_name_validated'];
       $movie_id_for_reservation = $movie_reservation_all_data['movie_id_for_reservation'];
-      $day_for_reservation = $movie_reservation_all_data['day_for_reservation'];
-      $air_info_id = $movie_reservation_all_data['air_info_id'];
+      $day_for_reservation      = $movie_reservation_all_data['day_for_reservation'];
+      $air_info_id              = $movie_reservation_all_data['air_info_id'];
 
       if( empty($customer_name_validated) ){
         return 'no_customer_name';
       }
 
-      // user inserted his name correctly and clicked final button for movie reservation on specific day of the week
+      // user inserted his name correctly and clicked final button for movie reservation
       if($customer_name_validated && $movie_id_for_reservation && $day_for_reservation){
         $reservation_status = $this->reserve_movie_for_day(
           $customer_name_validated,
@@ -109,6 +112,24 @@ class AllMoviesListing extends ControllerBase {
       }
     }
     return $reservation_status;
+  }
+
+  private function set_current_movie_basic_data($movie_title, $movie_datetime, $hall_name)
+  {
+    $this->movie_reservation_basic_data = [
+      'title' => $movie_title,
+      'date' => $movie_datetime,
+      'hall' => $hall_name,
+    ];
+  }
+
+  private function get_current_movie_basic_data()
+  {
+    if(isset($this->movie_reservation_basic_data)){
+      return $this->movie_reservation_basic_data;
+    } else {
+      return [];
+    }
   }
 
   /**
@@ -209,16 +230,38 @@ class AllMoviesListing extends ControllerBase {
   private function reserve_movie_for_day($customer_name, $movie_nid, $day, $air_info_id)
   {
     $movie = Node::load($movie_nid);
+
     $movie_name_arr = $movie->title->getValue();
     $movie_name_str = $movie_name_arr[0]['value'];
+
     $movie_categories = $movie->field_category->getValue();
     $all_movie_categories = $this->get_all_movie_categories();
     $str_of_all_cat_of_this_movie = '';
 
+    $paragraph_info = $this->get_paragraph_from_id($air_info_id);
+    $movie_air_datetime = $paragraph_info->field_time_of_airing->getValue();
+    $movie_air_datetime = $movie_air_datetime[0]['value'];
+
+    $movie_air_hall = $paragraph_info->field_hall->getValue();
+    $hall_id = $movie_air_hall[0]['target_id'];
+    $hall_name = $this->get_hall_name($hall_id);
+
+    $this->set_current_movie_basic_data($movie_name_str, $movie_air_datetime, $hall_name);
+
+    // check if user have any other reservations at that time, but that still doesn't solve this problem:
+    //    user reserved some movie. That movie lasts for some time, and in that time, another movie (Movie X) starts. User wants to reserve for movie X. And this creates conflict.
+    // thats why I need to [add movie duration in content - done] and add that value to movie_start. That means, if user already have a reservation in db, and wants to reserve Movie X which starts whil,
+    // first movie lasts, this should create a "warning message".
+
+    $movie_duration_arr = $paragraph_info->field_movie_duration->getValue();
+    $movie_duration   = $movie_duration_arr[0]['duration'];
+    $movie_in_seconds = $movie_duration_arr[0]['seconds'];
+
+    $movie_ends =  $this->movie_ends($movie_air_datetime, $movie_in_seconds);
 
     // if statement cant be on start of the function because title ins't loaded yet, only movie tile_id :/
     // must be '> 0' because some duplicate rows already exist in table. Once table is truncated, this can be changed to != 1
-    if($this->check_if_customer_reserved_movie_for_day($customer_name, $movie_name_str, $day) > 0){
+    if($this->check_if_customer_reserved_movie_on_air($customer_name, $movie_name_str, $air_info_id) > 0){
       return 'already_reserved';
     }
 
@@ -242,6 +285,7 @@ class AllMoviesListing extends ControllerBase {
           $movie_name_str,
           $str_of_all_cat_of_this_movie,
           $customer_name,
+          $movie_air_datetime,
           $air_info_id
         );
         return 'recorded';
@@ -260,6 +304,24 @@ class AllMoviesListing extends ControllerBase {
     }
   }
 
+  private function movie_ends($start, $movie_in_seconds)
+  {
+    $str_time = $start . " + " . $movie_in_seconds . " second";
+    $newtimestamp = strtotime($str_time);
+    return date('Y-m-d H:i:s', $newtimestamp);
+  }
+
+  /**
+   * Returns paragraph from id.
+   *
+   * @param $air_info_id
+   * @return \Drupal\Core\Entity\EntityBase|\Drupal\Core\Entity\EntityInterface|Paragraph|null
+   */
+  private function get_paragraph_from_id($air_info_id)
+  {
+    return Paragraph::load((string)$air_info_id);
+  }
+
   /**
    * Inserts record of customer reservation for movie.
    *
@@ -270,7 +332,7 @@ class AllMoviesListing extends ControllerBase {
    * @param $air_date
    * @param $air_info_id
    */
-  private function save_reservation_in_db($day, $movie_name_str, $str_of_all_cat_of_this_movie, $customer_name, $air_info_id)
+  private function save_reservation_in_db($day, $movie_name_str, $str_of_all_cat_of_this_movie, $customer_name, $movie_air_datetime, $air_info_id)
   {
     $connection = \Drupal::service('database');
     $result = $connection->insert('reservations')
@@ -279,7 +341,7 @@ class AllMoviesListing extends ControllerBase {
         'reserved_movie_name' => $movie_name_str,
         'reserved_movie_genre' => $str_of_all_cat_of_this_movie,
         'customer_name' => $customer_name,
-        'movie_air_date' => '',
+        'movie_air_date' => $movie_air_datetime,
         'field_movie_air_info_target_id' => $air_info_id,
       ])
       ->execute();
@@ -304,7 +366,7 @@ class AllMoviesListing extends ControllerBase {
   }
 
   /**
-   * Returns number of remeining tickets for selected movie airing.
+   * Returns number of remaining tickets for selected movie airing.
    *
    * @param $air_info_id
    * @return mixed
@@ -322,18 +384,23 @@ class AllMoviesListing extends ControllerBase {
   }
 
   /**
-   * Check if customer has already reserved same movie for specific day.
-   *
-   * Better way (or would it) would be to not show option for reservation on movie and day which customer already reserver.
-   * Or even better, first check if user reserved a movie, if he did, show "you have already reserved for this movie, wanna unreserve?"
+   * Check if customer has already reserved same movie.
    *
    * @param $customer
    * @param $movie
    * @param $day
    * @return int
    */
-  private function check_if_customer_reserved_movie_for_day($customer, $movie, $day){
+  private function check_if_customer_reserved_movie_on_air($customer, $movie, $movie_air_info_id){
     // need fetch num rows...
+    $database = \Drupal::database();
+    $sql = "SELECT * FROM reservations WHERE customer_name = '{$customer}' AND reserved_movie_name = '{$movie}' AND field_movie_air_info_target_id = '{$movie_air_info_id}'";
+    $query = $database->query($sql);
+    $result = $query->fetchAll();
+    return count($result);
+  }
+
+  private function check_if_customer_reserved_two_movies_at_same_time($customer, $movie, $day){
     $database = \Drupal::database();
     $sql = "SELECT * FROM reservations WHERE customer_name = '{$customer}' AND reserved_movie_name = '{$movie}' AND day_of_reservation = '{$day}'";
     $query = $database->query($sql);
@@ -371,6 +438,12 @@ class AllMoviesListing extends ControllerBase {
       $hash_tid_name[ $term->tid ] = $term->name;
     }
     return $hash_tid_name;
+  }
+
+  private function get_hall_name($hall_id)
+  {
+    $all_hall_terms = $this->get_all_hall_terms();
+    return $all_hall_terms[$hall_id];
   }
 
   public function movie_exporter()

@@ -86,7 +86,6 @@ function validate_customer_form(){
   let customer_name = document.getElementById("customer_name").value;
   let errors = [];
   if (customer_name === "") {
-
     errors.push("Name must be filled out.");
   }
   if (customer_name[0] !== customer_name[0].toUpperCase()){
@@ -98,11 +97,13 @@ function validate_customer_form(){
       break;
     }
   }
-  if(errors){
+  if(errors.length){
     let all_errors = "";
     for(let j = 0; j < errors.length; j++){
       all_errors = all_errors + errors[j] + '\n';
     }
+
+    console.log(all_errors);
     alert(all_errors);
 
     // set value to not valid input
