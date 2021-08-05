@@ -49,6 +49,7 @@ class MovieAvailabilityExtension extends AbstractExtension
       new TwigFunction("set_all_halls", [$this, "set_all_halls"]),
       new TwigFunction("check_if_airing_has_remaining_tickets", [$this, "check_if_airing_has_remaining_tickets"]),
       new TwigFunction("get_time_from_datetime", [$this, "get_time_from_datetime"]),
+      new TwigFunction("get_date_from_datetime", [$this, "get_date_from_datetime"]),
     ];
   }
 
@@ -210,8 +211,13 @@ class MovieAvailabilityExtension extends AbstractExtension
    * @return false|string
    */
   public function get_time_from_datetime($datetime){
+    $time_str = strtotime($datetime);
+    return date('H:i:s', $time_str);
+  }
+
+  public function get_date_from_datetime($datetime){
     $date_str = strtotime($datetime);
-    return date('H:i:s', $date_str);
+    return date('m/d/Y', $date_str);
   }
 
   /**

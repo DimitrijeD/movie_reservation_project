@@ -24,11 +24,19 @@
 }
 
 .reservation_message_failed{
-  background-color: lightcoral;
+  background-color: #ffcccc;
 }
 
 .reservation_message_critical_error{
   background-color: black;
   color: white;
   font-size: 20px;
+}
+
+.warning_reservation{
+  background-color: yellow;
+}
+
+.movie_span{
+  color: #884400;
 }
